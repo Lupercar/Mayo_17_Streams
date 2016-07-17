@@ -3,6 +3,9 @@ package consola;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 
 import entidades.Persona;
 
@@ -54,6 +57,8 @@ public class App {
 		personas.add(new Persona("Pepito",20));
 		personas.add(new Persona("Juanito",30));
 		personas.add(new Persona("Manganito",18));
+		personas.add(new Persona("Julia",18));
+		personas.add(new Persona("Pepe",30));
 		
 //		Obtener el nombre de la persona con más edad
 		String nombre1 = personas.stream()
@@ -89,5 +94,39 @@ public class App {
 		
 		System.out.println("La media es " +
 							media);
+		
+//		Reduce: Generar algo a partir de la lista
+//		Acumular edades de las personas
+		suma = personas.stream()
+				.reduce(new Persona("",0), 
+							(acc,p) -> {
+								acc.setEdad(acc.getEdad() + p.getEdad());
+								return acc; 
+							}
+						)
+				.getEdad();
+		
+		System.out.println("La suma con reduce es " + suma);
+		
+//		Agrupación de personas por edad
+		Map<Integer, List<Persona>>  mapa = personas.stream()
+				.collect(Collectors.groupingBy(Persona::getEdad));
+		
+		System.out.println("Personas agrupadas por edad: " + mapa.toString());
+		
+//		Creamos dos grupos uno para mayores de 20 y otro para menores o iguales a 20
+		Map<Boolean,List<Persona>> mapa2 = personas.stream()
+				.collect(Collectors.partitioningBy(p -> p.getEdad()>20));
+		
+		System.out.println("Personas particionadas por edad: " +
+				mapa2);
+		
+//		Obtener todos los nombres de las personas en un único String
+		String nombresPersonas = personas.stream()
+				.map(Persona :: getNombre)
+				.collect(Collectors.joining("-"));
+		
+		System.out.println("Nombre de personas: " + 
+							nombresPersonas);
 	}
 }// fin class consola.App
